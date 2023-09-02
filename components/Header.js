@@ -1,5 +1,4 @@
 import Image from "next/image";
-import avatar from "@/assets/ava.png";
 
 import { HomeIcon } from "@heroicons/react/solid";
 
