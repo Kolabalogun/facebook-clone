@@ -1,17 +1,29 @@
 import NextAuth from "next-auth";
-
-import FacebookProvider from "next-auth/providers/facebook";
-
 import GoogleProvider from "next-auth/providers/google";
 
 const handler = NextAuth({
-  // Configure one or more authentication providers
   providers: [
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+
+  pages: {
+    signIn: "/auth/signin",
+  },
+
+  callbacks: {
+    async session({ session, token, user }) {
+      session.user.username = session.user.name
+        .split(" ")
+        .join("")
+        .toLocaleLowerCase();
+
+      session.user.uid = token.sub;
+      return session;
+    },
+  },
 });
 
 export { handler as GET, handler as POST };
