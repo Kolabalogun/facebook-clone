@@ -29,8 +29,7 @@ const Header = () => {
             alt="instagram"
             className="w-32    hidden lg:inline-grid cursor-pointer"
           />
-        </Link>
-        <Link href={"/"} className="relative ">
+
           <img
             src="https://links.papareact.com/jjm"
             alt="instagram"
