@@ -57,7 +57,7 @@ const Header = () => {
         {/* Right  */}
 
         <div className="flex items-center justify-end space-x-4">
-          <MenuIcon className="h-6 md:hidden cursor-pointer " />
+          {/* <MenuIcon className="h-6 md:hidden cursor-pointer " /> */}
           <Link href={"/"}>
             <HomeIcon className="navBtn " />
           </Link>
@@ -73,10 +73,10 @@ const Header = () => {
 
               <PlusCircleIcon
                 onClick={() => setOpen(true)}
-                className="navBtn "
+                className="h-20 w-20 md:h-8 md:w-8 inline-flex cursor-pointer hover:scale-125 transition-all duration-150 ease-out "
               />
-              <UserGroupIcon className="navBtn " />
-              <HeartIcon className="navBtn " />
+              {/* <UserGroupIcon className="navBtn " /> */}
+              {/* <HeartIcon className="navBtn " /> */}
 
               <img
                 onClick={signOut}

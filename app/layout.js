@@ -14,6 +14,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <title>Instagram</title>
+        <link rel="icon" href="/fav.ico" />
+      </head>
       <Provider>
         <RecoilRoot>
           <body className={inter.className}>{children}</body>

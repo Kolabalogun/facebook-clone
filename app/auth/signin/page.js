@@ -2,6 +2,7 @@
 
 import Header from "@/components/Header";
 import { getProviders, signIn, useSession } from "next-auth/react";
+import Head from "next/head";
 
 import { useEffect, useState } from "react";
 
@@ -24,6 +25,11 @@ export default function SignIn() {
 
   return (
     <>
+      <Head>
+        <title>Instagram</title>
+        <link rel="icon" href="/fav.ico" />
+      </Head>
+
       <Header />
 
       <div className="flex flex-col items-center justify-center min-h-screen py-2 -mt-56 px-14 text-center">

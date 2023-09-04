@@ -9,7 +9,10 @@ import {
   HeartIcon,
 } from "@heroicons/react/outline";
 
-import { HeartIcon as HeartIconFilled } from "@heroicons/react/solid";
+import {
+  HeartIcon as HeartIconFilled,
+  BookmarkIcon as BookmarkIconFilled,
+} from "@heroicons/react/solid";
 import { useSession } from "next-auth/react";
 import {
   addDoc,
@@ -24,14 +27,21 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import Moment from "react-moment";
+import { useRecoilState } from "recoil";
+import { deleteModalState } from "@/atom/modalAtom";
 
 const Post = ({ id, username, userImg, img, caption }) => {
   const { data: session } = useSession();
+
+  const [openDeleteModal, setOpenDeleteModal] =
+    useRecoilState(deleteModalState);
 
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [likes, setlikes] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
+  const [bookmarks, setbookmarks] = useState([]);
+  const [hasbookmarked, setHasbookmarked] = useState(false);
 
   useEffect(() => {
     const unSub = onSnapshot(
@@ -52,7 +62,17 @@ const Post = ({ id, username, userImg, img, caption }) => {
       query(collection(db, "posts", id, "likes")),
       (snapshot) => {
         setlikes(snapshot.docs);
-        console.log("sddssdd");
+      }
+    );
+
+    return unSub;
+  }, [db]);
+
+  useEffect(() => {
+    const unSub = onSnapshot(
+      query(collection(db, "posts", id, "bookmark")),
+      (snapshot) => {
+        setbookmarks(snapshot.docs);
       }
     );
 
@@ -65,11 +85,27 @@ const Post = ({ id, username, userImg, img, caption }) => {
     );
   }, [likes]);
 
+  useEffect(() => {
+    setHasbookmarked(
+      bookmarks.findIndex((bookmark) => bookmark.id === session?.user?.uid) !==
+        -1
+    );
+  }, [bookmarks]);
+
   const likePost = async () => {
     if (hasLiked) {
       await deleteDoc(doc(db, "posts", id, "likes", session.user.uid));
     } else {
       await setDoc(doc(db, "posts", id, "likes", session.user.uid), {
+        username: session.user.username,
+      });
+    }
+  };
+  const bookmarkPost = async () => {
+    if (hasbookmarked) {
+      await deleteDoc(doc(db, "posts", id, "bookmark", session.user.uid));
+    } else {
+      await setDoc(doc(db, "posts", id, "bookmark", session.user.uid), {
         username: session.user.username,
       });
     }
@@ -90,6 +126,11 @@ const Post = ({ id, username, userImg, img, caption }) => {
     setComment("");
   };
 
+  const handleOpenDeleteModal = () => {
+    // Pass the post ID to the modal
+    setOpenDeleteModal({ open: true, postId: id });
+  };
+
   return (
     <div className="bg-white my-7 border rounded-sm">
       {/* Header  */}
@@ -100,8 +141,12 @@ const Post = ({ id, username, userImg, img, caption }) => {
           className="rounded-full h-12 w-12 object-contain border p-1 mr-3 "
         />
         <p className="flex-1 font-bold ">{username}</p>
-
-        <DotsHorizontalIcon className="h-5" />
+        {session?.user?.username === username && (
+          <DotsHorizontalIcon
+            onClick={handleOpenDeleteModal}
+            className="h-5 cursor-pointer"
+          />
+        )}
       </div>
 
       {/* Img  */}
@@ -124,7 +169,11 @@ const Post = ({ id, username, userImg, img, caption }) => {
             <PaperAirplaneIcon className="btn rotate-45" />
           </div>
 
-          <BookmarkIcon className="btn" />
+          {hasbookmarked ? (
+            <BookmarkIconFilled onClick={bookmarkPost} className="btn" />
+          ) : (
+            <BookmarkIcon onClick={bookmarkPost} className="btn" />
+          )}
         </div>
       )}
       {/* Caption  */}
